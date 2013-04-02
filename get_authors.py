@@ -1,0 +1,91 @@
+import os
+import json
+import twitter
+from pprint import pprint
+
+# COLLECTS AUTHOR DETAILS FROM THE TWEET
+def get_author_details(tweet, format):
+	# Will have to change as per yahoo format
+	if(format=="yahoo"):
+		time_zone =""
+		if(tweet['rtds_tweet'].has_key('user_time_zone')):
+			time_zone = tweet['rtds_tweet']['user_time_zone']
+		author_details ={
+				"user_id" : tweet['rtds_tweet']['user_id'],
+				"user_created_at" : tweet['rtds_tweet']['user_created_at'],
+				"user_followers_count" :tweet['rtds_tweet']['user_followers_count'],
+				"user_friends_count"  :tweet['rtds_tweet']['user_friends_count'],
+				"user_lang" : tweet['rtds_tweet']['user_lang'],
+				"user_location" : tweet['rtds_tweet']	['user_location'], 
+				"user_name" : tweet['rtds_tweet']['user_name'],
+				"user_profile_image_url" :tweet['rtds_tweet']['user_profile_image_url'],
+				"user_protected"  : tweet['rtds_tweet']['user_protected'] ,
+				"user_screen_name" :tweet['rtds_tweet']['user_screen_name'],
+				"user_statuses_count" :tweet['rtds_tweet']['user_statuses_count'],
+				"user_time_zone" :time_zone,
+				"user_utc_offset" :tweet['rtds_tweet']['user_utc_offset'],
+				"user_verified"  :tweet['rtds_tweet']['user_verified'],
+			}
+		return author_details
+		
+	else:
+		return tweet['user']
+
+
+# Load the database of users in Dictionary
+def load_users_db(loc):
+	f = open(loc,"r")
+	d = {}
+	line = f.readline()
+	while line:
+		d[int(line.replace("\n",""))] = 1
+		line = f.readline()
+	f.close()
+	return d
+
+def get_authors(paths):
+	sampled_files = os.listdir(paths['sampled_tweets'])
+	# GLOBAL DATABSAE OF ALL THE UNIQUE USERS
+	users_db = {}
+	print "loading users_db"
+	users_db = load_users_db(paths['users_db'])
+	count =0
+	
+
+	fauth   = open(paths['graph']+"/authors.txt","w")
+	f_db    = open(paths['users_db'],"a")
+	
+	for sample in sampled_files:
+		fsample = open(paths['sampled_tweets']+"/"+sample,"r")
+		line = fsample.readline()
+		
+		print "taking authors from ", sample	
+		while line:
+			tweet = json.loads(line)
+			# pprint(tweet)
+			tid = twitter.get_tweetid(tweet,"yahoo")
+			uid = twitter.get_uid(tweet,"yahoo")
+			# IF THE AUTHORS ALREADY IN DATABASE THEN IGNORE
+			if(users_db.has_key(uid)):
+				line = fsample.readline()
+				continue
+			else:
+				# Insert in db(both file and Dict) 
+				f_db.write(str(uid)+"\n")
+				users_db[uid] = 1
+				# and also in the authors.txt 
+				fauth.write(json.dumps(get_author_details(tweet,"yahoo"))+"\n")
+				count+=1
+				
+			
+			line = fsample.readline()
+		
+	
+		fsample.close()
+
+	fauth.close()
+	f_db.close()
+
+	# returning the number of new authors received.
+	return count
+	
