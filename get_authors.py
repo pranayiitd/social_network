@@ -53,6 +53,7 @@ def load_users_db(loc):
 def get_authors(paths):
 	
 	dir_list = os.listdir(paths['sampled_tweets'])
+	SIZE = 100
 	count =0
 	# print dir_list
 	for d in dir_list:
@@ -67,19 +68,24 @@ def get_authors(paths):
 		os.mkdir(new_dir)
 		print "Created new dir ",new_dir
 
+		# New Authors dump file
+		fauth   = open(new_dir+"/authors.txt","w")
+
 		for sample in file_list:
 			print "    file ",sample
 			fsample = open(old_dir+"/"+sample,"r")
-			fauth   = open(new_dir+"/"+sample,"w")
-
 			line = fsample.readline()
 			print "TAKING AUTHORS FROM", sample	
+			c = 0
 			while line:
 				tweet = json.loads(line)
 				tid = twitter.get_tweetid(tweet,"yahoo")
 				uid = twitter.get_uid(tweet,"yahoo")
 				fauth.write(json.dumps(get_author_details(tweet,"yahoo"))+"\n")
 				count+=1
+				c+=1
+				if(c==SIZE):
+					break
 
 
 				# # IF THE AUTHORS ALREADY IN DATABASE THEN IGNORE
@@ -95,10 +101,10 @@ def get_authors(paths):
 					
 				
 				line = fsample.readline()
-			
+		
 		
 			fsample.close()
-			fauth.close()
+		fauth.close()
 			
 
 	

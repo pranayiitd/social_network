@@ -14,6 +14,41 @@ paths = {	"filtered_tweets" :"../tweets_dump",
 			
 			}
 
+def count_authors():
+
+	f1 = open("../graph/2013-04-03/authors.txt","r")
+	f2 = open("../graph/2013-04-04/authors.txt","r")
+
+	# f1 = open("../graph/temp/authors.txt","r")
+	# f2 = open("../graph/temp/authors.txt","r")
+
+	arr =[]
+	
+	line = f1.readline()
+	while line:
+		entry = json.loads(line)
+		uid = entry["user_id"]
+		arr.append(uid)
+		line = f1.readline()
+
+
+	line = f2.readline()
+	while line:
+		entry = json.loads(line)
+		uid = entry["user_id"]
+		arr.append(uid)
+		line = f2.readline()
+
+	f1.close()
+	f2.close()
+	print "Total\tUnique\tPercentage"
+	y = len(arr)
+	x = len(set(arr))
+
+	print "%d\t%d\t%0.2f"%(y,x,100*x/y)
+
+
+
 
 def count_followers():
 	f = open(paths["graph"]+"/followers.txt","r")
@@ -76,9 +111,15 @@ cmd = sys.argv[1]
 
 if(cmd=="u" or cmd=="a"):
 	print "Number of profiles collected ",count_users()
+
 if (cmd=="f" or cmd=="a"):
 	print "Number of total followers ids ",count_followers()
+
 if (cmd=="ua" or cmd=="a"):
-	print print "Number of Unique followers ids ",count_uids()
+	print "Number of Unique followers ids ",count_uids()
+
+if (cmd=="auth" or cmd=="a"):
+	count_authors()
+
 # if (cmd=="tt" or cmd=="a"):	
 # 	print count_trending_tweets()

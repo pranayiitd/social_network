@@ -36,8 +36,8 @@ paths = {	"filtered_tweets" :"../tweets_dump",
 # ret = sample.random_sample(paths)
 # dump_log(paths['sampling_log'], [ paths['sampled_tweets'], datetime.now(), ret])
 
-ret = get_authors.get_authors(paths)
-dump_log(paths['authors_log'], [ paths['sampled_tweets'], datetime.now(), ret])
+# ret = get_authors.get_authors(paths)
+# dump_log(paths['authors_log'], [ paths['sampled_tweets'], datetime.now(), ret])
 
 # ret = get_followers.start(paths)
 # dump_log(paths['followers_log'], [ paths['sampled_tweets'], datetime.now(), ret])
