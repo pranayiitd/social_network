@@ -40,7 +40,8 @@ def find_start(dest, source):
 	while line:
 		count+=1
 		entry = json.loads(line)
-		_id =entry["author"]
+		# _id =entry["author"]
+		_id =entry["user_id"]
 		
 		if(_id==last_id):
 			start_line = count
@@ -75,8 +76,8 @@ def get_friends(version, app, f1, f2):
 	line = f1.readline()
 	while line:
 		entry = json.loads(line)
-		uid = entry['author']
-		
+		# uid = entry['author']
+		uid = entry['user_id']
 	# 	#GETTING FOLLOWERS FROM TWITTER by user_id
 		entry = twitter.get_friends(uid,0,version,client)
 		
@@ -115,13 +116,14 @@ def start(paths):
 		set_app.append(app)
 		i+=5
 	
-	# Source of authors whose followers to be collected
-	f1 = open(paths['graph']+"/followers.txt","r")
+	# Source of authors whose friends to be collected
+	# f1 = open(paths['graph']+"/followers.txt","r")
+	f1 = open(paths['graph']+"/authors.txt","r")
 	f2 = open(paths['graph']+"/friends.txt","a")
 	
 	#----------------------------------
 	# Skipping the lines to start from right place.
-	start_from = find_start(paths['graph']+"/friends.txt", paths['graph']+"/followers.txt")
+	start_from = find_start(paths['graph']+"/friends.txt", paths['graph']+"/authors.txt")
 	print "starting to read authors from line ", start_from
 	
 	# return
@@ -134,8 +136,8 @@ def start(paths):
 	i = 0 ; v = 1 ; time_elapsed = 0
 	while(True):
 		print "Trying version %.1f, App number %d"%(v, i)
+		
 		ret, limit, count = get_friends(v, set_app[i], f1, f2)
-
 		dump_log(paths['friends_log'],[paths['graph'], datetime.now(), ret, count])
 		
 		# All Authors followers Done

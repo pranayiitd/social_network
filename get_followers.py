@@ -115,7 +115,8 @@ def start(paths):
 	start_from = find_start(paths['graph']+"/followers.txt", paths['graph']+"/authors.txt")
 	print "starting tor read authors from line ", start_from
 	
-	return
+	# return
+
 	line=""
 	for i in range(start_from):
 		line = fnewAuth.readline()
@@ -124,8 +125,10 @@ def start(paths):
 	i = 0 ; v = 1 ; time_elapsed = 0
 	while(True):
 		print "Trying version %.1f, App number %d"%(v, i)
+
 		ret, limit, count = get_followers(v, set_app[i], fnewAuth, fdump)
 		dump_log(paths['followers_log'],[paths['graph'], datetime.now(), ret, count])
+
 		# All Authors followers Done
 		if ret==2:
 			print "ALL AUTHORS DONE"

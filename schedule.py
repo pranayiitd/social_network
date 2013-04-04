@@ -21,7 +21,7 @@ def dump_log(loc, arr):
 
 paths = {	"filtered_tweets" :"../tweets_dump",
 			"sampled_tweets" :"../sample_dump",
-			"graph" : "../graph",
+			"graph" : "../graph/2013-04-03",
 			"users_db"   : "../graph/users_db.txt",
 
 			"sampling_log" : "../graph/sampling_log.txt",
@@ -42,11 +42,12 @@ paths = {	"filtered_tweets" :"../tweets_dump",
 # ret = get_followers.start(paths)
 # dump_log(paths['followers_log'], [ paths['sampled_tweets'], datetime.now(), ret])
 
+ret = get_friends.start(paths)
+dump_log(paths['profiles_log'], [ paths['graph'], datetime.now(), "profiles", ret])
+
 # ret = get_fids.get_fids(paths)
 # dump_log(paths['followers_log'], [ paths['graph'], datetime.now(), "new fids", ret])
 
 # ret = get_profiles.start(paths)
 # dump_log(paths['profiles_log'], [ paths['graph'], datetime.now(), "profiles", ret])
 
-# ret = get_friends.start(paths)
-# dump_log(paths['profiles_log'], [ paths['graph'], datetime.now(), "profiles", ret])
