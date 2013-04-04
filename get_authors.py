@@ -8,11 +8,18 @@ def get_author_details(tweet, format):
 	# Will have to change as per yahoo format
 	if(format=="yahoo"):
 		time_zone =""
+		desc = ""
+		
 		if(tweet['rtds_tweet'].has_key('user_time_zone')):
 			time_zone = tweet['rtds_tweet']['user_time_zone']
+		
+		if(tweet['rtds_tweet'].has_key('user_description')):
+			time_zone = tweet['rtds_tweet']['user_description']
+		
 		author_details ={
 				"user_id" : tweet['rtds_tweet']['user_id'],
 				"user_created_at" : tweet['rtds_tweet']['user_created_at'],
+				"user_description" : time_zone,
 				"user_followers_count" :tweet['rtds_tweet']['user_followers_count'],
 				"user_friends_count"  :tweet['rtds_tweet']['user_friends_count'],
 				"user_lang" : tweet['rtds_tweet']['user_lang'],
@@ -44,48 +51,63 @@ def load_users_db(loc):
 	return d
 
 def get_authors(paths):
-	sampled_files = os.listdir(paths['sampled_tweets'])
-	# GLOBAL DATABSAE OF ALL THE UNIQUE USERS
-	users_db = {}
-	print "loading users_db"
-	users_db = load_users_db(paths['users_db'])
+	
+	dir_list = os.listdir(paths['sampled_tweets'])
 	count =0
-	
-
-	fauth   = open(paths['graph']+"/authors.txt","w")
-	f_db    = open(paths['users_db'],"a")
-	
-	for sample in sampled_files:
-		fsample = open(paths['sampled_tweets']+"/"+sample,"r")
-		line = fsample.readline()
+	# print dir_list
+	for d in dir_list:
 		
-		print "taking authors from ", sample	
-		while line:
-			tweet = json.loads(line)
-			# pprint(tweet)
-			tid = twitter.get_tweetid(tweet,"yahoo")
-			uid = twitter.get_uid(tweet,"yahoo")
-			# IF THE AUTHORS ALREADY IN DATABASE THEN IGNORE
-			if(users_db.has_key(uid)):
-				line = fsample.readline()
-				continue
-			else:
-				# Insert in db(both file and Dict) 
-				f_db.write(str(uid)+"\n")
-				users_db[uid] = 1
-				# and also in the authors.txt 
+		# The source of tweets
+		old_dir = paths["sampled_tweets"]+"/"+d
+		file_list = os.listdir(old_dir)
+		print "Reading from dir ",old_dir
+		
+		#New dir for dumping authors
+		new_dir = paths["graph"]+"/"+d
+		os.mkdir(new_dir)
+		print "Created new dir ",new_dir
+
+		for sample in file_list:
+			print "    file ",sample
+			fsample = open(old_dir+"/"+sample,"r")
+			fauth   = open(new_dir+"/"+sample,"w")
+
+			line = fsample.readline()
+			print "TAKING AUTHORS FROM", sample	
+			while line:
+				tweet = json.loads(line)
+				tid = twitter.get_tweetid(tweet,"yahoo")
+				uid = twitter.get_uid(tweet,"yahoo")
 				fauth.write(json.dumps(get_author_details(tweet,"yahoo"))+"\n")
 				count+=1
+
+
+				# # IF THE AUTHORS ALREADY IN DATABASE THEN IGNORE
+				# if(users_db.has_key(uid)):
+				# 	line = fsample.readline()
+				# 	continue
+				# else:
+				# 	# Insert in db(both file and Dict) 
+				# 	f_db.write(str(uid)+"\n")
+				# 	users_db[uid] = 1
+				# 	# and also in the authors.txt 
+				# 	fauth.write(json.dumps(get_author_details(tweet,"yahoo"))+"\n")
+					
 				
+				line = fsample.readline()
 			
-			line = fsample.readline()
 		
+			fsample.close()
+			fauth.close()
+			
+
 	
-		fsample.close()
-
-	fauth.close()
-	f_db.close()
-
-	# returning the number of new authors received.
+	# return
+	# # GLOBAL DATABSAE OF ALL THE UNIQUE USERS
+	# users_db = {}
+	# print "loading users_db"
+	# users_db = load_users_db(paths['users_db'])
+	# count =0
+	
 	return count
 	

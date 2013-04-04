@@ -20,8 +20,8 @@ def dump_log(loc, arr):
 # /home/y/var/timesense/data/twitter_filteredTweets/en-US/syc
 
 paths = {	"filtered_tweets" :"../tweets_dump",
-			"sampled_tweets" :"../sample_dump/2013-03-29",
-			"graph" : "../graph/2013-03-29",
+			"sampled_tweets" :"../sample_dump",
+			"graph" : "../graph",
 			"users_db"   : "../graph/users_db.txt",
 
 			"sampling_log" : "../graph/sampling_log.txt",
@@ -35,8 +35,9 @@ paths = {	"filtered_tweets" :"../tweets_dump",
 
 # ret = sample.random_sample(paths)
 # dump_log(paths['sampling_log'], [ paths['sampled_tweets'], datetime.now(), ret])
-# ret = get_authors.get_authors(paths)
-# dump_log(paths['authors_log'], [ paths['sampled_tweets'], datetime.now(), ret])
+
+ret = get_authors.get_authors(paths)
+dump_log(paths['authors_log'], [ paths['sampled_tweets'], datetime.now(), ret])
 
 # ret = get_followers.start(paths)
 # dump_log(paths['followers_log'], [ paths['sampled_tweets'], datetime.now(), ret])
@@ -47,5 +48,5 @@ paths = {	"filtered_tweets" :"../tweets_dump",
 # ret = get_profiles.start(paths)
 # dump_log(paths['profiles_log'], [ paths['graph'], datetime.now(), "profiles", ret])
 
-ret = get_friends.start(paths)
+# ret = get_friends.start(paths)
 # dump_log(paths['profiles_log'], [ paths['graph'], datetime.now(), "profiles", ret])

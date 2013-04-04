@@ -89,7 +89,7 @@ def get_friends(version, app, f1, f2):
 			ret =1
 			print "limit reached"
 			break
-	# 	DUMP FOLLOWERS IDs
+	# 	DUMP FRIENDS IDs
 		f2.write(json.dumps(entry)+"\n")	
 		count+=1
 
