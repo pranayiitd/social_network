@@ -47,12 +47,28 @@ def count_authors():
 
 	print "%d\t%d\t%0.2f"%(y,x,100*x/y)
 
+def count_friends():
+#	f = open(paths["graph"]+"/followers.txt","r")
+        f= open("../visualize/data/friends.txt","r")
+        line = f.readline()
+	followers_count =0
+	followers =[]
+	while line:
+		entry = json.loads(line)
+		followers = followers+entry['friends']
+		# count = len(set(entry['followers']))
+		# followers_count+=count
+		# print len(entry['followers'])
+		line =f.readline()
+	return len(set(followers))
+
 
 
 
 def count_followers():
-	f = open(paths["graph"]+"/followers.txt","r")
-	line = f.readline()
+#	f = open(paths["graph"]+"/followers.txt","r")
+        f= open("../visualize/data/followers.txt.head","r")
+        line = f.readline()
 	followers_count =0
 	followers =[]
 	while line:
@@ -62,7 +78,7 @@ def count_followers():
 		# followers_count+=count
 		# print len(entry['followers'])
 		line =f.readline()
-	return len(set(followers))
+	return len(followers), len(set(followers))
 
 
 def count_users():
@@ -85,7 +101,7 @@ def count_uids():
 	f = open(paths["graph"]+"/fids_new.txt","r")
 	line = f.readline()
 	count =0
-	fids=[]
+        fids=[]
 	while line:
 		entry = json.loads(line)
 		fids = fids+entry
@@ -114,6 +130,10 @@ if(cmd=="u" or cmd=="a"):
 
 if (cmd=="f" or cmd=="a"):
 	print "Number of total followers ids ",count_followers()
+
+if (cmd=="fr" or cmd=="a"):
+	print "Number of total friends ids ",count_friends()
+
 
 if (cmd=="ua" or cmd=="a"):
 	print "Number of Unique followers ids ",count_uids()
