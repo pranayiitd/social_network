@@ -138,6 +138,7 @@ def start(paths):
 		print "Trying version %.1f, App number %d"%(v, i)
 		
 		ret, limit, count = get_friends(v, set_app[i], f1, f2)
+	
 		dump_log(paths['friends_log'],[paths['graph'], datetime.now(), ret, count])
 		
 		# All Authors followers Done

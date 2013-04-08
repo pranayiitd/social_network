@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+from pprint import pprint
 
 paths = {	"filtered_tweets" :"../tweets_dump",
 			"sampled_tweets" :"../sample_dump/2013-03-29",
@@ -47,39 +48,81 @@ def count_authors():
 
 	print "%d\t%d\t%0.2f"%(y,x,100*x/y)
 
+def count_all():
+	
+
+	total_authors =0
+	total_followers =0
+	total_friends =0
+	total_r1 =0.0
+	total_r2 =0.0
+	zero =0
+
+	f= open("../visualize/data/authors.txt","r")
+	line = f.readline()
+	
+	while line:
+		entry = json.loads(line)
+		x = entry['user_followers_count']
+		y = entry['user_friends_count']
+		# print x,y
+		# break
+		if(x==0 or y==0):
+			zero+=1
+			line = f.readline()
+			continue
+		
+		total_authors+=1
+		total_followers+=x
+		total_friends+=y
+		total_r1 += (y/x)
+		total_r2 += (x/y)
+			
+		#sys.stdout.write("\r count :"+str(total_authors))
+		line = f.readline()
+
+	r1 = float(total_r1)/total_authors
+	r2 = float(total_r2)/total_authors
+	print "count, Followers, Friends \t R \t r1 \t r2"
+	print "%d, %d, %d \t %0.2f \t %0.2f \t %f"%(total_authors,total_followers,total_friends,float(total_friends)/total_followers,r1,r2)
+	print "Average Followers",total_followers/total_authors
+	print "Average Friends ",total_friends/total_authors
+	print zero
+	# return count
+
+
 def count_friends():
-#	f = open(paths["graph"]+"/followers.txt","r")
-        f= open("../visualize/data/friends.txt","r")
-        line = f.readline()
+ 	f= open("../visualize/data/friends.txt","r")
+ 	line = f.readline()
 	followers_count =0
 	followers =[]
 	while line:
 		entry = json.loads(line)
-		followers = followers+entry['friends']
-		# count = len(set(entry['followers']))
-		# followers_count+=count
+		#followers = followers+entry['friends']
+		count = len((entry['friends']))
+		followers_count+=count
 		# print len(entry['followers'])
 		line =f.readline()
-	return len(set(followers))
-
+#	return len(set(followers))
+        return followers_count
 
 
 
 def count_followers():
 #	f = open(paths["graph"]+"/followers.txt","r")
-        f= open("../visualize/data/followers.txt.head","r")
+        f= open("../visualize/data/followers.txt","r")
         line = f.readline()
 	followers_count =0
 	followers =[]
 	while line:
 		entry = json.loads(line)
-		followers = followers+entry['followers']
-		# count = len(set(entry['followers']))
-		# followers_count+=count
+		#followers = followers+entry['followers']
+		count = len((entry['followers']))
+		followers_count+=count
 		# print len(entry['followers'])
 		line =f.readline()
-	return len(followers), len(set(followers))
-
+#	return len(followers), len(set(followers))
+        return followers_count
 
 def count_users():
 	f = open(paths["graph"]+"/profiles.txt","r")
@@ -98,30 +141,70 @@ def count_users():
 	return users_count
 
 def count_uids():
-	f = open(paths["graph"]+"/fids_new.txt","r")
+	#f = open(paths["graph"]+"/fids_new.txt","r")
+	f= open("../visualize/data/followers.txt","r")
 	line = f.readline()
 	count =0
-        fids=[]
+
+	total_f =0
+	fids = []
+	followers=set()
 	while line:
 		entry = json.loads(line)
-		fids = fids+entry
+		total_f += len(entry['followers'])
+		fids = fids + entry['followers']
+		count+=1
+		# print count
+		if(count%100==0):
+			followers = followers|set(fids)
+			fids =[]# x = len(set(fids))
+			x = len(followers)
+			y = total_f
+			# y = len(fids)
+			print "%d, %d, %d, %f, %d"%(count,y,x,float(x)/y,y/count)
+
 		line = f.readline()
+        
+  	f.close()
 	return len(set(fids))
 
 def count_trending_tweets():
 	files = os.listdir("../india/tweets")
-	count =0
+	total_authors =0
+	total_followers =0
+	total_friends =0
+	total_r1 =0.0
+	total_r2 =0.0
+	zero =0
 	for i in range(len(files)):
 		f = open("../india/tweets/"+files[i],"r")
 		line = f.readline()
 		while line:
 			entry = json.loads(line)
 			tweets = json.loads(entry['tweets'])
-			count = count+len(tweets['statuses'])
-			# break
+			
+			for j in range(len(tweets['statuses'])):
+				x = tweets['statuses'][j]['user']['followers_count']
+				y = tweets['statuses'][j]['user']['friends_count']
+				if(x==0 or y==0):
+					zero+=1
+					continue
+				total_authors+=1
+				total_followers+=x
+				total_friends+=y
+				total_r1 += (y/x)
+				total_r2 += (x/y)
+                        #print total_authors				
 			line = f.readline()
 		# break
-	return count
+	r1 = float(total_r1)/total_authors
+	r2 = float(total_r2)/total_authors
+	print "count, Followers, Friends \t R \t r1 \t r2"
+	print "%d, %d, %d \t %0.2f \t %0.2f \t %f"%(total_authors,total_followers,total_friends,float(total_friends)/total_followers,r1,r2)
+	print "Average Followers",total_followers/total_authors
+	print "Average Friends ",total_friends/total_authors
+	print zero
+	# return count
 
 cmd = sys.argv[1]
 
@@ -141,5 +224,8 @@ if (cmd=="ua" or cmd=="a"):
 if (cmd=="auth" or cmd=="a"):
 	count_authors()
 
-# if (cmd=="tt" or cmd=="a"):	
-# 	print count_trending_tweets()
+if (cmd=="tt" or cmd=="a"):	
+	count_trending_tweets()
+
+if (cmd=="all" or cmd=="a"):	
+	count_all()
