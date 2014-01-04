@@ -1,4 +1,5 @@
 Author :Pranay Agarwal 
 email : agarwalpranaya@gmail.com
 
-Creating the social graph of twitter for trend predictio.
+Scraping the connections from twitter network using twitterAPI.
+=======
